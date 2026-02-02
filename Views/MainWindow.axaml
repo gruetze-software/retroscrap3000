@@ -1,0 +1,73 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:RetroScrap3000.ViewModels"
+        x:Class="RetroScrap3000.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/icon.ico"
+        Title="{Binding AppTitle}"
+        Background="{DynamicResource ThemeBackgroundBrush}"
+        Width="800" Height="600" WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Grid ColumnDefinitions="350, *">
+        
+        <Grid Grid.Column="0" RowDefinitions="*, 5, 2*">
+            
+            <Border Grid.Row="0" 
+                Background="{DynamicResource SystemControlBackgroundListLowBrush}" 
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,0,1,1" Padding="5">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Systeme" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <ListBox ItemsSource="{Binding Systems}" 
+                        Padding="10"
+                             SelectedItem="{Binding SelectedSystem}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SystemName}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <GridSplitter Grid.Row="1" Background="#CCCCCC" ResizeDirection="Rows"/>
+
+            <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="0,0,1,0" Padding="5">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" 
+                               Text="{Binding SelectedSystem.SystemName, FallbackValue='Games', StringFormat='Games: {0}'}" 
+                               FontWeight="Bold" Margin="0,5,0,5"/>
+                    <ListBox ItemsSource="{Binding SelectedSystem.Roms}"
+                             SelectedItem="{Binding SelectedGame}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Column="1" Background="#F5F5F5" Padding="20">
+            <StackPanel Spacing="20">
+                <TextBlock Text="Details" FontSize="20" FontWeight="Bold" Foreground="Gray"/>
+                <Separator/>
+                <TextBlock Text="Wähle ein Spiel aus der Liste, um Details anzuzeigen." 
+                           IsVisible="{Binding SelectedGame, Converter={x:Static ObjectConverters.IsNull}}"
+                           FontStyle="Italic"/>
+                
+                <TextBlock Text="{Binding SelectedGame.Name}" FontSize="18" FontWeight="Bold"/>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+    
+
+</Window>

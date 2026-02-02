@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=RetroScrap 3000
+Comment=ROM scraper powered by ScreenScraper.fr for Batocera, Recalbox or LaunchBox.
+Exec=/usr/share/retroscrap3000/retroscrap3000
+Icon=retroscrap3000
+Terminal=false
+Categories=AudioVideo;
