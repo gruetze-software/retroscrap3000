@@ -1,9 +1,14 @@
 ﻿using System.Diagnostics;
+using System.Reactive;
 using System.Threading.Tasks;
 using ReactiveUI;
-using retroscrap3000.Models;
+using RetroScrap3000.Models;
 using RetroScrap3000.Services;
 using System.Collections.ObjectModel;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 
 namespace RetroScrap3000.ViewModels;
 
@@ -41,6 +46,27 @@ public partial class MainWindowViewModel : ViewModelBase
     }
     #endregion
 
+    private AppSettings _settings;
+
+    public string RomPath
+    {
+        get => _settings.RomPath;
+        set
+        {
+            if (_settings.RomPath != value)
+            {
+                _settings.RomPath = value;
+                this.RaisePropertyChanged(); // Signal an UI
+                _settings.Save();           // Automatisch speichern
+            }
+        }
+    }
+    
+    // Commands für die Buttons
+    public ReactiveCommand<Unit, Unit> SelectFolderCommand { get; }
+    public ReactiveCommand<Unit, Unit> ScanCommand { get; }
+    public ReactiveCommand<Unit, Unit> OptionsCommand { get; }
+
     // 1. Die Liste der Systeme
     public ObservableCollection<SystemViewModel> Systems { get; } = new();
 
@@ -64,7 +90,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         AppTitle = Tools.GetAppTitle();
         _version = Tools.GetVersion();
-        var settings = AppSettings.Load(); 
+        _settings = AppSettings.Load(); 
 
         #region Test Data
         // Test:
@@ -89,6 +115,19 @@ public partial class MainWindowViewModel : ViewModelBase
         // Optional: Erstes System vor-selektieren
         SelectedSystem = snes;
         #endregion
+
+        // Commands initialisieren...
+        SelectFolderCommand = ReactiveCommand.CreateFromTask(async () => {
+            await OpenFolderDialogAsync();
+        });
+
+        ScanCommand = ReactiveCommand.CreateFromTask(async () => {
+            await OpenFolderDialogAsync();
+        });
+
+        OptionsCommand = ReactiveCommand.CreateFromTask(async () => {
+            await OpenFolderDialogAsync();
+        });
     }
 
     public async Task CheckVersionAsync()
@@ -109,6 +148,29 @@ public partial class MainWindowViewModel : ViewModelBase
         if (!string.IsNullOrEmpty(_downloadUrl))
         {
             Process.Start(new ProcessStartInfo(_downloadUrl) { UseShellExecute = true });
+        }
+    }
+
+    private async Task OpenFolderDialogAsync()
+    {
+        // Zugriff auf das Hauptfenster erhalten
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            var topLevel = TopLevel.GetTopLevel(desktop.MainWindow);
+            if (topLevel != null)
+            {
+                var result = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+                {
+                    Title = "Wähle deinen ROM-Ordner",
+                    AllowMultiple = false
+                });
+
+                if (result.Count > 0)
+                {
+                    // Den Pfad aus dem URI extrahieren
+                    RomPath = result[0].Path.LocalPath;
+                }
+            }
         }
     }
 }

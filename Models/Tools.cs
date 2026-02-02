@@ -2,7 +2,7 @@ using System.Reflection;
 using System;
 using System.IO;
 
-namespace retroscrap3000.Models;
+namespace RetroScrap3000.Models;
 
 public static class Tools
 {

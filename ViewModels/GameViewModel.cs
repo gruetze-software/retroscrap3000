@@ -1,6 +1,6 @@
 using ReactiveUI;
 using Avalonia.Media;
-using retroscrap3000.Models;
+using RetroScrap3000.Models;
 
 namespace RetroScrap3000.ViewModels;
 

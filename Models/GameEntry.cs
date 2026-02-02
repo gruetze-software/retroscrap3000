@@ -7,9 +7,9 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using retroscrap3000.Models;
+using RetroScrap3000.Models;
 
-namespace retroscrap3000.Models
+namespace RetroScrap3000.Models
 {
 	[XmlRoot("gameList")]
 	public class GameList

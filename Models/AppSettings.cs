@@ -2,10 +2,14 @@ using System;
 using System.IO;
 using System.Text.Json;
 
-namespace retroscrap3000.Models;
+namespace RetroScrap3000.Models;
 
 public class AppSettings
 {
+    public string RomPath { get; set; } = string.Empty;
+    public string LastUsedSystem { get; set; } = string.Empty;
+    public bool DarkMode { get; set; } = true;
+
     public static string FilePath
     {
         get 

@@ -6,68 +6,109 @@
         Icon="/Assets/icon.ico"
         Title="{Binding AppTitle}"
         Background="{DynamicResource ThemeBackgroundBrush}"
-        Width="800" Height="600" WindowStartupLocation="CenterScreen">
+        Width="1000" Height="700" WindowStartupLocation="CenterScreen">
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
-
-    <Grid ColumnDefinitions="350, *">
+    <Grid RowDefinitions="Auto, *">
         
-        <Grid Grid.Column="0" RowDefinitions="*, 5, 2*">
-            
-            <Border Grid.Row="0" 
-                Background="{DynamicResource SystemControlBackgroundListLowBrush}" 
-                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                BorderThickness="0,0,1,1" Padding="5">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Systeme" FontWeight="Bold" Margin="0,0,0,5"/>
-                    <ListBox ItemsSource="{Binding Systems}" 
-                        Padding="10"
-                             SelectedItem="{Binding SelectedSystem}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding SystemName}" />
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DockPanel>
-            </Border>
+        <Border Grid.Row="0" 
+                Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}" 
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" 
+                BorderThickness="0,0,0,1" 
+                Padding="10">
+            <Grid ColumnDefinitions="*, Auto, Auto, Auto">
+                <TextBox Grid.Column="0" 
+                         Text="{Binding RomPath}" 
+                         Watermark="Pfad zu den ROMs wählen..." 
+                         VerticalContentAlignment="Center"
+                         Margin="0,0,0,0"> <TextBox.InnerRightContent>
+                        <Button Command="{Binding SelectFolderCommand}" Content="..." Padding="10,0" Background="Transparent" BorderThickness="0"/>
+                    </TextBox.InnerRightContent>
+                </TextBox>
 
-            <GridSplitter Grid.Row="1" Background="#CCCCCC" ResizeDirection="Rows"/>
+                <Button Grid.Column="1" Command="{Binding ScanCommand}" Content="Scan ROMs" 
+                        Background="{DynamicResource SystemAccentColor}" Foreground="White"
+                        FontWeight="Bold" Padding="15,5" Margin="10,0,5,0"/>
 
-            <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="0,0,1,0" Padding="5">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" 
-                               Text="{Binding SelectedSystem.SystemName, FallbackValue='Games', StringFormat='Games: {0}'}" 
-                               FontWeight="Bold" Margin="0,5,0,5"/>
-                    <ListBox ItemsSource="{Binding SelectedSystem.Roms}"
-                             SelectedItem="{Binding SelectedGame}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}" />
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DockPanel>
-            </Border>
-        </Grid>
-
-        <Border Grid.Column="1" Background="#F5F5F5" Padding="20">
-            <StackPanel Spacing="20">
-                <TextBlock Text="Details" FontSize="20" FontWeight="Bold" Foreground="Gray"/>
-                <Separator/>
-                <TextBlock Text="Wähle ein Spiel aus der Liste, um Details anzuzeigen." 
-                           IsVisible="{Binding SelectedGame, Converter={x:Static ObjectConverters.IsNull}}"
-                           FontStyle="Italic"/>
+                <Button Grid.Column="2" Command="{Binding OptionsCommand}" Content="⚙" Padding="10,5"/>
                 
-                <TextBlock Text="{Binding SelectedGame.Name}" FontSize="18" FontWeight="Bold"/>
-            </StackPanel>
+                <Border Grid.Column="3" IsVisible="{Binding IsUpdateAvailable}" Background="Orange" 
+                        CornerRadius="15" Padding="10,2" Margin="10,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="Update!" FontSize="10" FontWeight="Bold" Foreground="Black"/>
+                </Border>
+            </Grid>
         </Border>
 
-    </Grid>
-    
+        <Grid Grid.Row="1" ColumnDefinitions="350, 5, *">
+            
+            <Grid Grid.Column="0" RowDefinitions="*, 5, 2*">
+                <Border Grid.Row="0" Background="{DynamicResource SystemControlBackgroundListLowBrush}" 
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="0,0,1,1">
+                    <DockPanel Margin="10">
+                        <TextBlock DockPanel.Dock="Top" Text="SYSTEME" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource SystemAccentColor}" Margin="0,0,0,10"/>
+                        <ListBox ItemsSource="{Binding Systems}" SelectedItem="{Binding SelectedSystem}" Background="Transparent">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:SystemViewModel">
+                                    <TextBlock Text="{Binding SystemName}" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+                </Border>
 
+                <GridSplitter Grid.Row="1" 
+                    Height="5"
+                    HorizontalAlignment="Stretch" 
+                    Background="Transparent"
+                    ResizeDirection="Rows">
+                    <GridSplitter.Styles>
+                        <Style Selector="GridSplitter:pointerover">
+                            <Setter Property="Background" Value="{DynamicResource SystemAccentColor}"/>
+                        </Style>
+                    </GridSplitter.Styles>
+                </GridSplitter>
+
+                <Border Grid.Row="2" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="0,0,1,0">
+                    <DockPanel Margin="10">
+                        <TextBlock DockPanel.Dock="Top" Text="{Binding SelectedSystem.SystemName, FallbackValue='GAMES', StringFormat='GAMES: {0}'}" 
+                                FontSize="12" FontWeight="Bold" Foreground="{DynamicResource SystemAccentColor}" Margin="0,0,0,10"/>
+                        <ListBox ItemsSource="{Binding SelectedSystem.Roms}" SelectedItem="{Binding SelectedGame}" Background="Transparent">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:GameViewModel">
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+                </Border>
+            </Grid>
+
+            <GridSplitter Grid.Column="1" 
+                Width="5" 
+                HorizontalAlignment="Stretch" 
+                Background="Transparent">
+                <GridSplitter.Styles>
+                    <Style Selector="GridSplitter:pointerover">
+                        <Setter Property="Background" Value="{DynamicResource SystemAccentColor}"/>
+                    </Style>
+                </GridSplitter.Styles>
+            </GridSplitter>
+
+            <Border Grid.Column="2" Background="{DynamicResource ThemeBackgroundBrush}" Padding="30">
+                <ContentControl Content="{Binding SelectedGame}">
+                    <ContentControl.ContentTemplate>
+                        <DataTemplate DataType="vm:GameViewModel">
+                            <StackPanel Spacing="15">
+                                <TextBlock Text="{Binding Name}" FontSize="28" FontWeight="ExtraBold"/>
+                                <Separator Background="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
+                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Opacity="0.7"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ContentControl.ContentTemplate>
+                    <ContentControl.Content>
+                        <TextBlock Text="Wähle ein Spiel aus, um Details anzuzeigen." HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5" FontStyle="Italic"/>
+                    </ContentControl.Content>
+                </ContentControl>
+            </Border>
+        </Grid>
+    </Grid>
 </Window>
