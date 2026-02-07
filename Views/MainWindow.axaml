@@ -29,7 +29,7 @@
                         Background="{DynamicResource SystemAccentColor}" Foreground="White"
                         FontWeight="Bold" Padding="15,5" Margin="10,0,5,0"/>
 
-                <Button Grid.Column="2" Command="{Binding OptionsCommand}" Content="⚙" Padding="10,5"/>
+                <Button Grid.Column="2" Click="OpenOptions_Click" Content="⚙" Padding="10,5"/>
                 
                 <Border Grid.Column="3" IsVisible="{Binding IsUpdateAvailable}" Background="Orange" 
                         CornerRadius="15" Padding="10,2" Margin="10,0,0,0" VerticalAlignment="Center">

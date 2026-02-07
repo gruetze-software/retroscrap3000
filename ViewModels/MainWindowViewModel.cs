@@ -9,6 +9,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using RetroScrap3000.Views;
 
 namespace RetroScrap3000.ViewModels;
 
@@ -46,18 +47,18 @@ public partial class MainWindowViewModel : ViewModelBase
     }
     #endregion
 
-    private AppSettings _settings;
+    public AppSettings Settings { get; set; }
 
     public string RomPath
     {
-        get => _settings.RomPath;
+        get => Settings.RomPath;
         set
         {
-            if (_settings.RomPath != value)
+            if (Settings.RomPath != value)
             {
-                _settings.RomPath = value;
+                Settings.RomPath = value;
                 this.RaisePropertyChanged(); // Signal an UI
-                _settings.Save();           // Automatisch speichern
+                Settings.Save();           // Automatisch speichern
             }
         }
     }
@@ -86,11 +87,11 @@ public partial class MainWindowViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _selectedGame, value);
     }
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(AppSettings settings)
     {
         AppTitle = Tools.GetAppTitle();
         _version = Tools.GetVersion();
-        _settings = AppSettings.Load(); 
+        Settings = settings;
 
         #region Test Data
         // Test:

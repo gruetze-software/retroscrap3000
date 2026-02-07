@@ -1,0 +1,108 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:RetroScrap3000.ViewModels"
+        x:Class="RetroScrap3000.Views.OptionsWindow"
+        x:DataType="vm:OptionsViewModel"
+        Title="Optionen" Width="650" Height="500"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <Grid RowDefinitions="*, Auto">
+        <TabControl Grid.Row="0" Margin="10">
+            
+            <TabItem Header="General">
+                <StackPanel Spacing="15" Margin="10">
+                    <TextBlock Text="Anwendungseinstellungen" FontWeight="Bold" FontSize="16"/>
+                    <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" 
+                            BorderThickness="1" Padding="15" CornerRadius="5">
+                        <StackPanel Spacing="10">
+                            <ToggleSwitch Content="Dark Mode" 
+                                          IsChecked="{Binding DarkMode, Mode=TwoWay}"
+                                          OnContent="Aktiviert" OffContent="Deaktiviert"/>
+                            
+                            <CheckBox Content="ROM scan at startup" 
+                                      IsChecked="{Binding ScanOnStart, Mode=TwoWay}" />
+                            
+                            <CheckBox Content="Logging" 
+                                      IsChecked="{Binding Logging, Mode=TwoWay}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Scrap User">
+                <StackPanel Spacing="15" Margin="10">
+                    <TextBlock Text="Benutzer-Account" FontWeight="Bold" FontSize="16"/>
+                    
+                    <Label Content="Benutzername:" Target="UserField"/>
+                    <TextBox x:Name="UserField" 
+                            Text="{Binding ScrapUser, Mode=TwoWay}" 
+                            Watermark="Username" />
+                    
+                    <Label Content="Passwort:" Target="PwField"/>
+                    <TextBox x:Name="PwField" 
+                            Text="{Binding ScrapPwd, Mode=TwoWay}" 
+                            Watermark="Password" 
+                            PasswordChar="*" />
+
+                    <Separator Height="20" Opacity="0"/>
+                    
+                    <StackPanel Orientation="Horizontal" Spacing="15">
+                        <Button Content="Login Testen" 
+                                Command="{Binding TestConnectionCommand}"
+                                Padding="10,5"/>
+                        
+                        <TextBlock Text="{Binding TestStatus}" 
+                                VerticalAlignment="Center"
+                                FontWeight="SemiBold"
+                                Foreground="{Binding TestStatus}"/>
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Scrap Data">
+                <StackPanel Spacing="15" Margin="10">
+                    <TextBlock Text="Daten-Quellen" FontWeight="Bold" FontSize="16"/>
+                    <TextBlock Text="Wähle aus, welche Informationen geladen werden sollen." 
+                               FontStyle="Italic" Opacity="0.7"/>
+                    <CheckBox Content="Cover Bilder laden" IsChecked="True" />
+                    <CheckBox Content="Beschreibungen (Metadata) laden" IsChecked="True" />
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Info">
+                <StackPanel Spacing="20" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Image Source="/Assets/icon.ico" Width="64" Height="64"/>
+                    
+                    <TextBlock Text="RetroScrap 3000" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Version 1.0.0-alpha" HorizontalAlignment="Center" Opacity="0.6"/>
+                    <TextBlock Text="Ein Herzensprojekt für Retro-Fans." HorizontalAlignment="Center"/>
+                    
+                    <Button Content="Support (Ko-fi)" 
+                            HorizontalAlignment="Center" 
+                            Background="#29abe2" 
+                            Foreground="White" 
+                            Padding="20,10"/>
+                </StackPanel>
+            </TabItem>
+            
+        </TabControl>
+
+        <Border Grid.Row="1" 
+                Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}" 
+                Padding="10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                <Button Content="Abbrechen" 
+                        Command="{Binding CancelCommand}" 
+                        Width="100"/>
+                
+                <Button Content="OK" 
+                        Command="{Binding SaveCommand}"
+                        Background="{DynamicResource SystemAccentColor}" 
+                        Foreground="White" 
+                        Width="100"
+                        FontWeight="Bold"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

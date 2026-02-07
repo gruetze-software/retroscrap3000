@@ -6,6 +6,8 @@ using System.Linq;
 using Avalonia.Markup.Xaml;
 using RetroScrap3000.ViewModels;
 using RetroScrap3000.Views;
+using RetroScrap3000.Models;
+using Avalonia.Styling;
 
 namespace RetroScrap3000;
 
@@ -23,9 +25,18 @@ public partial class App : Application
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
+
+            // 1. Settings laden
+            var settings = AppSettings.Load(); 
+
+            // 2. Theme sofort beim Start setzen
+            Application.Current!.RequestedThemeVariant = settings.DarkMode 
+                ? ThemeVariant.Dark 
+                : ThemeVariant.Light;
+
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(),
+                DataContext = new MainWindowViewModel(settings),
             };
         }
 
