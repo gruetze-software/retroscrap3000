@@ -6,20 +6,30 @@ using System.Reactive;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace RetroScrap3000.ViewModels;
 
 public class OptionsViewModel : ViewModelBase
 {
+    public class ApiResultLine
+    {
+        public string Label { get; set; } = string.Empty;
+        public string Value { get; set; } = string.Empty;
+    }
+    public ObservableCollection<ApiResultLine> ApiDetails { get; } = new();
+
+    private bool _isTesting;
+    public bool IsTesting
+    {
+        get => _isTesting;
+        set => this.RaiseAndSetIfChanged(ref _isTesting, value);
+    }
+
+
     private readonly AppSettings _settings;
     private readonly bool _initialDarkMode; // Zum Speichern des alten Zustands
-
-    private string _testStatus = string.Empty;
-    public string TestStatus
-    {
-        get => _testStatus;
-        set => this.RaiseAndSetIfChanged(ref _testStatus, value);
-    }
 
     public ReactiveCommand<Unit, Unit> TestConnectionCommand { get; }
     public ReactiveCommand<Unit, Unit> SaveCommand { get; }
@@ -44,15 +54,16 @@ public class OptionsViewModel : ViewModelBase
 
         TestConnectionCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            TestStatus = "Prüfe Verbindung...";
-            
-            // Hier kommt deine tatsächliche Scraping-API Logik rein
-            bool success = await Task.Run(() => TryLogin()); 
+            IsTesting = true;
+            ApiDetails.Clear();
 
-            if (success)
-                TestStatus = "✅ Login erfolgreich!";
-            else
-                TestStatus = "❌ Login fehlgeschlagen. Bitte Daten prüfen.";
+            var apiresult = await Task.Run(() => TryLogin()); 
+            foreach (var line in apiresult)
+            {
+                ApiDetails.Add(line);
+            }
+
+            IsTesting = false;
         });
     }
 
@@ -129,10 +140,15 @@ public class OptionsViewModel : ViewModelBase
         }
     }
 
-    private async Task<bool> TryLogin()
+    private async Task<List<ApiResultLine>> TryLogin()
     {
-        if (string.IsNullOrEmpty(ScrapUser) || string.IsNullOrEmpty(ScrapPwd)) 
-            return false;
+        List<ApiResultLine> result = new List<ApiResultLine>();
+        if (string.IsNullOrEmpty(ScrapUser) ) 
+            result.Add(new ApiResultLine { Label = "Error:", Value = "Username is empty" });
+        if (string.IsNullOrEmpty(ScrapPwd) )
+            result.Add(new ApiResultLine { Label = "Error:", Value = "Password is empty" });
+        if (result.Count > 0)
+            return result;
         
         try
         {
@@ -141,42 +157,30 @@ public class OptionsViewModel : ViewModelBase
             var testdata = await manager.FetchSsUserInfosAsync();
             if (testdata == null || testdata.response == null || testdata.response.ssuser == null)
             {
-                /*
-                listBoxApiTest.Items.Clear();
-                listBoxApiTest.Items.AddRange(
-                    [ Properties.Resources.Txt_Api_Err_NoResponse,
-                        Properties.Resources.Txt_Api_Err_CheckInternet ]);
-                        */
-                return false;
+               result.Add(new ApiResultLine { Label = "Error:", Value = "No user data received" });
+               return result;
             }
             else
             {
-                    //listBoxApiTest.Items.Clear();
-                    var user = testdata.response.ssuser;
-                    /*
-                    listBoxApiTest.Items.Add(string.Format(Properties.Resources.Txt_Api_SsUser_Name, user.id ?? ""));
-                    listBoxApiTest.Items.Add(string.Format(Properties.Resources.Txt_Api_SsUser_Level, user.niveau != null ? user.niveau.Value : "-"));
-                    listBoxApiTest.Items.Add(string.Format(Properties.Resources.Txt_Api_SsUser_LastLogin, user.LastVisit() != null ? user.LastVisit()!.Value.ToString() : "-"));
-                    listBoxApiTest.Items.Add(string.Format(Properties.Resources.Txt_Api_SsUser_Visits, user.visites != null ? user.visites.Value : "-"));
-                    listBoxApiTest.Items.Add(string.Format(Properties.Resources.Txt_Api_SsUser_Region, user.favregion ?? ""));
-                    listBoxApiTest.Items.Add(string.Format(Properties.Resources.Txt_Api_SsUser_MaxThreads, user.maxthreads != null ? user.maxthreads : "-"));
-                    listBoxApiTest.Items.Add(string.Format(Properties.Resources.Txt_Api_SsUser_DownloadKBS, user.MaxDownloadSpeed != null ? user.MaxDownloadSpeed : "-"));
-                    listBoxApiTest.Items.Add(user.GetQuotaToday());
-                    */
-                    return true;
-            }
+                var user = testdata.response.ssuser;
+                result.Add(new ApiResultLine { Label = "Username:", Value = user.id ?? "-" });
+                result.Add(new ApiResultLine { Label = "Level:", Value = user.niveau != null ? user.niveau.Value.ToString() : "-" });
+                result.Add(new ApiResultLine { Label = "Last Login:", Value = user.LastVisit() != null ? user.LastVisit()!.Value.ToString() : "-" });
+                result.Add(new ApiResultLine { Label = "Requests Today:", Value = user.requeststoday != null ? user.requeststoday.Value.ToString() : "-" });
+                result.Add(new ApiResultLine { Label = "Requests per Day:", Value = user.GetQuotaToday() });
+                result.Add(new ApiResultLine { Label = "Max Requests per Day:", Value = user.maxrequestsperday != null ? user.maxrequestsperday.Value.ToString() : "-" });
+                result.Add(new ApiResultLine { Label = "Used Today (%):", Value = user.UsedTodayPercent().ToString("F2") });
+                result.Add(new ApiResultLine { Label = "Max Threads:", Value = user.maxthreads != null ? user.maxthreads.Value.ToString() : "-" });
+                result.Add(new ApiResultLine { Label = "Favorite Region:", Value = user.favregion ?? "-" });
+                result.Add(new ApiResultLine { Label = "Visits:", Value = user.visites != null ? user.visites.Value.ToString() : "-" });
+            }    
         }
         catch (Exception ex)
         {
-            /*
-                listBoxApiTest.Items.Clear();
-                listBoxApiTest.Items.Add("Fail!");
-                listBoxApiTest.Items.Add(ex.Message);
-                Log.Error($"{Utils.GetExcMsg(ex)}");
-                */
-                Trace.WriteLine($"Exception {Tools.GetExcMsg(ex)}");
-            return false;
+            result.Add(new ApiResultLine { Label = "Error:", Value = Tools.GetExcMsg(ex) });
         }
+
+        return result;
     }
 
     public void SaveAndClose()

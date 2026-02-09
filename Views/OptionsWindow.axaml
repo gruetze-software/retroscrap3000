@@ -31,33 +31,75 @@
             </TabItem>
 
             <TabItem Header="Scrap User">
-                <StackPanel Spacing="15" Margin="10">
-                    <TextBlock Text="Benutzer-Account" FontWeight="Bold" FontSize="16"/>
+                <Grid RowDefinitions="Auto, Auto, Auto, *" Margin="10">
                     
-                    <Label Content="Benutzername:" Target="UserField"/>
-                    <TextBox x:Name="UserField" 
-                            Text="{Binding ScrapUser, Mode=TwoWay}" 
-                            Watermark="Username" />
-                    
-                    <Label Content="Passwort:" Target="PwField"/>
-                    <TextBox x:Name="PwField" 
-                            Text="{Binding ScrapPwd, Mode=TwoWay}" 
-                            Watermark="Password" 
-                            PasswordChar="*" />
+                    <StackPanel Grid.Row="0" Spacing="10">
+                        <TextBlock Text="Benutzer-Account" 
+                                FontWeight="Bold" 
+                                FontSize="16"
+                                Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        
+                        <Label Content="Benutzername:" Target="UserField"/>
+                        <TextBox x:Name="UserField" 
+                                Text="{Binding ScrapUser, Mode=TwoWay}" 
+                                Watermark="Username" />
+                        
+                        <Label Content="Passwort:" Target="PwField"/>
+                        <TextBox x:Name="PwField" 
+                                Text="{Binding ScrapPwd, Mode=TwoWay}" 
+                                Watermark="Password" 
+                                PasswordChar="*" />
+                    </StackPanel>
 
-                    <Separator Height="20" Opacity="0"/>
-                    
-                    <StackPanel Orientation="Horizontal" Spacing="15">
+                    <StackPanel Grid.Row="1" Margin="0,15,0,10" Spacing="10">
                         <Button Content="Login Testen" 
                                 Command="{Binding TestConnectionCommand}"
-                                Padding="10,5"/>
+                                Padding="20,8"
+                                HorizontalAlignment="Left"/>
                         
-                        <TextBlock Text="{Binding TestStatus}" 
-                                VerticalAlignment="Center"
-                                FontWeight="SemiBold"
-                                Foreground="{Binding TestStatus}"/>
+                        <ProgressBar IsIndeterminate="True" 
+                                    IsVisible="{Binding IsTesting}" 
+                                    Height="3" 
+                                    Foreground="{DynamicResource SystemAccentColor}"
+                                    Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"/>
                     </StackPanel>
-                </StackPanel>
+
+                    <Border Grid.Row="3" 
+                            Background="{DynamicResource SystemControlBackgroundChromeLowBrush}" 
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" 
+                            BorderThickness="1" 
+                            CornerRadius="5" 
+                            Padding="12">
+                        
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBlock Text="API Account Status" 
+                                        FontSize="11" 
+                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" 
+                                        Margin="0,0,0,12"/>
+                                
+                                <ItemsControl ItemsSource="{Binding ApiDetails}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid ColumnDefinitions="140,*" Margin="0,0,0,10">
+                                                <TextBlock Grid.Column="0" 
+                                                        Text="{Binding Label}" 
+                                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" 
+                                                        FontSize="14"/>
+                                                <TextBlock Grid.Column="1" 
+                                                        Text="{Binding Value}" 
+                                                        FontWeight="Bold" 
+                                                        FontSize="14" 
+                                                        Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                                        TextWrapping="Wrap"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
             </TabItem>
 
             <TabItem Header="Scrap Data">
