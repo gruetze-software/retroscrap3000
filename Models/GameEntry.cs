@@ -15,7 +15,7 @@ namespace RetroScrap3000.Models
 	public class GameList
 	{
 		[XmlIgnore]
-		//public RetroSystem RetroSys { get; set; } = new();
+		public RetroSystem RetroSys { get; set; } = new();
 
 		[XmlElement("game")]
 		public List<GameEntry> Games { get; set; } = new();

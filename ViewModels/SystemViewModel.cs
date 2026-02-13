@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using ReactiveUI;
+using RetroScrap3000.Models;
 
 namespace RetroScrap3000.ViewModels;
 
@@ -7,6 +8,7 @@ public class SystemViewModel : ViewModelBase
 {
     private string _systemName = string.Empty;
     private string _folderPath = string.Empty;
+    private RetroSystem? _system = null;
 
     public string SystemName
     {
@@ -23,9 +25,10 @@ public class SystemViewModel : ViewModelBase
     // Hier landen die GameViewModels, die wir vorhin erstellt haben
     public ObservableCollection<GameViewModel> Roms { get; } = new();
 
-    public SystemViewModel(string name, string path = "")
+    public SystemViewModel(RetroSystem sys)
     {
-        SystemName = name;
-        FolderPath = path;
+        _system = sys;
+        SystemName = _system.Name_eu;
+        FolderPath = _system.RomFolderName;
     }
 }

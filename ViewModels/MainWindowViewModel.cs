@@ -10,12 +10,25 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using RetroScrap3000.Views;
+using Avalonia.Threading;
+using System.Linq;
 
 namespace RetroScrap3000.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
     #region AppTitle and Updater
+
+    private GameManager _gameManager;
+    private ScraperManager _scraper;
+    private readonly RetroSystems _systemsContainer = new();
+
+    private string _statusText = string.Empty;
+    public string StatusText
+    {
+        get => _statusText;
+        set { this.RaiseAndSetIfChanged(ref _statusText, value); Trace.WriteLine(_statusText); }
+    }
 
     public string AppTitle { get; }
 
@@ -63,6 +76,13 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
     
+    private bool _isScanning;
+    public bool IsScanning
+    {
+        get => _isScanning;
+        set => this.RaiseAndSetIfChanged(ref _isScanning, value);
+    }
+
     // Commands für die Buttons
     public ReactiveCommand<Unit, Unit> SelectFolderCommand { get; }
     public ReactiveCommand<Unit, Unit> ScanCommand { get; }
@@ -89,42 +109,18 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel(AppSettings settings)
     {
+        _gameManager = new GameManager();
+        _scraper = new ScraperManager();
         AppTitle = Tools.GetAppTitle();
         _version = Tools.GetVersion();
         Settings = settings;
-
-        #region Test Data
-        // Test:
-        // 1. Ein System erstellen
-        var snes = new SystemViewModel("Super Nintendo", "/home/user/roms/snes");
-        
-        // 2. Ein Test-Spiel hinzufügen (Wrapper um dein originales GameEntry)
-        var game1 = new GameViewModel(new GameEntry 
-        { 
-            Name = "Super Mario World", 
-            Developer = "Nintendo",
-            Genre = "Platformer",
-            Description = "Das klassische Abenteuer von Mario."
-        });
-        
-        snes.Roms.Add(game1);
-        
-        // 3. Zur Liste der Systeme hinzufügen
-        Systems.Add(snes);
-        Systems.Add(new SystemViewModel("C64", "/home/user/roms/c64"));
-
-        // Optional: Erstes System vor-selektieren
-        SelectedSystem = snes;
-        #endregion
-
+       
         // Commands initialisieren...
         SelectFolderCommand = ReactiveCommand.CreateFromTask(async () => {
             await OpenFolderDialogAsync();
         });
 
-        ScanCommand = ReactiveCommand.CreateFromTask(async () => {
-            await OpenFolderDialogAsync();
-        });
+        ScanCommand = ReactiveCommand.CreateFromTask(ExecuteScanAsync);
 
         OptionsCommand = ReactiveCommand.CreateFromTask(async () => {
             await OpenFolderDialogAsync();
@@ -173,5 +169,72 @@ public partial class MainWindowViewModel : ViewModelBase
                 }
             }
         }
+    }
+
+    public async Task InitializeAsync()
+    {
+        // 1. Zuerst lokal aus der JSON-Datei laden
+        await Task.Run(() => _systemsContainer.Load());
+
+        if (_systemsContainer.SystemList.Count == 0 || _systemsContainer.IsTooOld)
+        {
+            StatusText = "Systemliste veraltet oder fehlt. Lade von API...";
+            await _systemsContainer.SetSystemsFromApiAsync(_scraper);
+            _systemsContainer.Save();
+        }
+        
+        StatusText = $"{_systemsContainer.SystemList.Count} Systeme geladen.";
+    }
+
+     private async Task ExecuteScanAsync()
+    {
+        if (IsScanning) return;
+        
+        IsScanning = true;
+        StatusText = "Scanne ROMs...";
+
+        try
+        {
+            // Wir führen den schweren Load-Vorgang im Hintergrund aus
+            await Task.Run(() => 
+            {
+                // Deine vorhandene Methode im GameManager
+                // Übergibt den Pfad und die Systemliste
+                _gameManager.Load(Settings.RomPath, _systemsContainer);
+            });
+
+            // Nach dem Laden: UI aktualisieren (Systeme in die Liste werfen)
+            await UpdateSystemListAfterScan();
+        }
+        finally
+        {
+            IsScanning = false;
+            StatusText = "Scan abgeschlossen.";
+        }
+    }
+
+    private async Task UpdateSystemListAfterScan()
+    {
+        // Auf dem UI-Thread arbeiten
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            Systems.Clear();
+            foreach (var sysModel in _gameManager.SystemList)
+            {
+                // Wir nutzen den GameManager, um zu sehen, ob für dieses System ROMs gefunden wurden
+                // (Pass das an deine GameManager-Struktur an)
+                var gamesFound = sysModel.Value;
+                
+                if (gamesFound.Games.Any())
+                {
+                    var displayItem = new SystemViewModel(gamesFound.RetroSys);
+                    foreach (var game in gamesFound.Games)
+                    {
+                        displayItem.Roms.Add(new GameViewModel(game));
+                    }
+                    Systems.Add(displayItem);
+                }
+            }
+        });
     }
 }

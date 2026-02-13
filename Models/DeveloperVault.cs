@@ -11,9 +11,6 @@ public sealed class DeveloperVault
 {
 	private const char Separator = '|';
     private const string _file = "retroscrap.bin";
-    
-    // Ersetze diese Hex-Strings durch deine echten Keys aus dem alten Projekt!
-    // Diese müssen exakt 32 Bytes (64 Zeichen) für Key und 16 Bytes (32 Zeichen) für IV sein.
     private const string CryptoKeyHex = "71377235643368326B396D3667317434663878306A3370356332763962317A36";
     private const string CryptoIvHex = "613663396531663468376A306B336D35";
 

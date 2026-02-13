@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace RetroScrap3000.Services
 {
@@ -40,7 +41,7 @@ namespace RetroScrap3000.Services
             catch (Exception Ex)
             {
                 // Fehlerbehandlung (z.B. Logging) kann hier hinzugefügt werden
-                Trace.WriteLine($"Fehler bei der Update-Prüfung: {Ex.Message}");
+                Log.Fatal(Ex, $"Fehler bei der Update-Prüfung");
             }
             
             return (false, string.Empty, string.Empty);

@@ -3,10 +3,13 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using RetroScrap3000.Helpers;
 using RetroScrap3000.Models;
+using Serilog;
 
+namespace RetroScrap3000.Services;
 /// <summary>
 /// ScrapperManager für ScreenScraper.fr
 /// </summary>
@@ -52,10 +55,10 @@ public class ScraperManager
 
 	public async Task<SsUserInfosResponse> FetchSsUserInfosAsync()
 	{
-		//Log.Information($"FetchSsUserInfosAsync() Call Api {BaseUrl}ssuserInfos.php?xxxxxxx");
+		Log.Information($"FetchSsUserInfosAsync() Call Api {BaseUrl}ssuserInfos.php?xxxxxxx");
 		var url = $"{BaseUrl}ssuserInfos.php?{BuildAuthQuery()}";
         Trace.WriteLine(url);
-		//Log.Debug(url);
+		Log.Debug(url);
 		
 		using var resp = await _http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
 		if (!resp.IsSuccessStatusCode)
@@ -87,7 +90,7 @@ public class ScraperManager
 		if (ssUser == null)
 			return;
 
-		//Log.Debug("[ScrapperManager::UpdateStateAndSsUser()]");
+		Log.Debug("[ScrapperManager::UpdateStateAndSsUser()]");
 		LatestSsUser = ssUser;
 
 		// Speichern des aktuellen Status
@@ -109,12 +112,12 @@ public class ScraperManager
 		if (LatestSsUser == null || LatestSsUser.maxrequestspermin == null)
 		{
 			// Fallback-Drosselung, falls noch kein SsUser geladen wurde
-			//Log.Debug($"[ScrapperManager::WaitForRateLimitAndAddRequestCounter()] - 1000ms, SsUser is null");
+			Log.Debug($"[ScrapperManager::WaitForRateLimitAndAddRequestCounter()] - 1000ms, SsUser is null");
 			await Task.Delay(1000);
 			return;
 		}
 
-		//Log.Debug($"[ScrapperManager::WaitForRateLimitAndAddRequestCounter()] - MaxRequestsForDay: {LatestSsUser.maxrequestsperday} - Today: {_quotaState!.LastReportedRequestsToday}");
+		Log.Debug($"[ScrapperManager::WaitForRateLimitAndAddRequestCounter()] - MaxRequestsForDay: {LatestSsUser.maxrequestsperday} - Today: {_quotaState!.LastReportedRequestsToday}");
 		if (_quotaState!.LastReportedRequestsToday >= LatestSsUser.maxrequestsperday)
 		{
 			throw new Exception("The daily limit has been reached.");
@@ -139,7 +142,7 @@ public class ScraperManager
 		return (int)(baseDelay * 1.1); // Warten Sie 10% länger als nötig
 	}
 
-/*
+
 	/// <summary>
 	/// Liefert (ok, daten, fehler). Bei ok=false ist daten leer und fehler enthält den Grund.
 	/// </summary>
@@ -187,6 +190,7 @@ public class ScraperManager
 	/// <param name="systems"></param>
 	/// <param name="delayMs"></param>
 	/// <returns></returns>
+	/*
 	public static async Task DownloadSystemImagesAsync(
 			IEnumerable<Systeme> systems,
 			int delayMs = 500)

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using RetroScrap3000.Services;
 
 namespace RetroScrap3000.ViewModels;
 

@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RetroScrap3000.ViewModels;
@@ -11,6 +12,15 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
+    protected override async void OnOpened(EventArgs e)
+    {
+        base.OnOpened(e);
+        if (DataContext is MainWindowViewModel vm)
+        {
+            await vm.InitializeAsync();
+        }
+    }
+    
     public async void OpenOptions_Click(object? sender, RoutedEventArgs e)
     {
         if (DataContext is MainWindowViewModel vm && vm.Settings != null)
