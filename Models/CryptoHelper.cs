@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using RetroScrap3000.Models;
+using Serilog;
 
 namespace RetroScrap3000.Helpers;
 
@@ -39,7 +40,7 @@ public static class CryptoHelper
         }
         catch ( Exception ex)
         {
-            Trace.WriteLine($"Exception Encrypt: {Tools.GetExcMsg(ex)}");
+            Log.Error(ex,$"Exception Encrypt.");
             return string.Empty;
         }
     }
@@ -64,7 +65,7 @@ public static class CryptoHelper
         }
         catch (Exception ex)
         {
-            Trace.WriteLine($"Exception Decrypt: {Tools.GetExcMsg(ex)}");
+            Log.Error(ex, $"Exception Decrypt.");
             return string.Empty;
         }
     }

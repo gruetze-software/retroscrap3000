@@ -16,14 +16,14 @@ namespace RetroScrap3000.Services
 
         public async Task<(bool UpdateAvailable, string DownloadUrl, string VersionTag)> CheckForUpdates()
         {
-            Trace.WriteLine("Checking for updates...");
+            Log.Information("Checking for updates...");
 
             // Test
             //return (true, "https://www.google.com", "v9.9.9");
 
             using var client = new HttpClient();
             // GitHub verlangt zwingend einen User-Agent Header
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("C64UViewer-Updater");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("RetroScrap3000-Updater");
 
             try
             {

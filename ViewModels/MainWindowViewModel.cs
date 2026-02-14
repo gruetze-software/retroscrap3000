@@ -12,6 +12,7 @@ using Avalonia.Platform.Storage;
 using RetroScrap3000.Views;
 using Avalonia.Threading;
 using System.Linq;
+using Serilog;
 
 namespace RetroScrap3000.ViewModels;
 
@@ -27,7 +28,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public string StatusText
     {
         get => _statusText;
-        set { this.RaiseAndSetIfChanged(ref _statusText, value); Trace.WriteLine(_statusText); }
+        set { this.RaiseAndSetIfChanged(ref _statusText, value); Log.Information(_statusText); }
     }
 
     public string AppTitle { get; }

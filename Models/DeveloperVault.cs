@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using RetroScrap3000.Models;
+using Serilog;
 
 namespace RetroScrap3000.Helpers;
 
@@ -63,7 +64,7 @@ public sealed class DeveloperVault
         }
         catch (Exception ex) 
         {   
-            Trace.WriteLine($"Exception DeveloperVault Load: {Tools.GetExcMsg(ex)}");
+            Log.Error(ex, $"Exception DeveloperVault Load.");
             return false; 
         }
     }

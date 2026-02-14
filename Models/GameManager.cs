@@ -75,8 +75,15 @@ public class GameManager
 			throw new ApplicationException("RomPath is null!");
 
 		SystemList.Clear();
-		RomPath = rompath;
-		if (!rompath.ToLower().EndsWith("roms") && !rompath.ToLower().EndsWith("\\") )
+
+		// Normalisiere den Pfad: Entferne abschließende Slashes (egal ob / oder \)
+    	// Das ist entscheidend für Linux Mint!
+    	rompath = rompath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+    	RomPath = rompath;
+
+		// Endet der Pfad auf den Hauptordner "roms"?
+    	// Wenn nicht, laden wir nur ein einzelnes System (der aktuelle Ordner ist das System)
+    	if (!rompath.EndsWith("roms", StringComparison.OrdinalIgnoreCase))
 		{
 			LoadSystem(Path.Combine(RomPath, "gamelist.xml"),
 				systems.SystemList.FirstOrDefault(x => x.RomFolderName?.ToLower() == Path.GetFileName(RomPath).ToLower())!);

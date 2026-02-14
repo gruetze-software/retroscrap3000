@@ -9,6 +9,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using RetroScrap3000.Services;
+using Serilog;
 
 namespace RetroScrap3000.ViewModels;
 
@@ -186,7 +187,7 @@ public class OptionsViewModel : ViewModelBase
 
     public void SaveAndClose()
     {
-        Trace.WriteLine("SaveAndClose()");
+        Log.Information("OptionsView SaveAndClose()");
         _settings.Save();
     }
 }

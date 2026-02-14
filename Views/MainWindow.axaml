@@ -5,7 +5,8 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/icon.ico"
         Title="{Binding AppTitle}"
-        Background="{DynamicResource ThemeBackgroundBrush}"
+        Background="{DynamicResource SystemRegionBrush}"
+        TransparencyLevelHint="AcrylicBlur"
         Width="1000" Height="700" WindowStartupLocation="CenterScreen">
 
     <Grid RowDefinitions="Auto, *">

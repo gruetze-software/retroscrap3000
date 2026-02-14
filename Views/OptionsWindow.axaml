@@ -3,18 +3,25 @@
         xmlns:vm="using:RetroScrap3000.ViewModels"
         x:Class="RetroScrap3000.Views.OptionsWindow"
         x:DataType="vm:OptionsViewModel"
+        Background="Transparent"
+        TransparencyLevelHint="None"
+        SystemDecorations="Full"
         Title="Optionen" Width="650" Height="500"
         WindowStartupLocation="CenterOwner"
-        CanResize="False">
+        CanResize="true">
 
-    <Grid RowDefinitions="*, Auto">
+    <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" 
+            BorderBrush="{DynamicResource SystemAccentColor}" 
+            BorderThickness="1"
+            BoxShadow="0 4 20 0 #AA000000">
+        <Grid RowDefinitions="*, Auto">
         <TabControl Grid.Row="0" Margin="10">
             
             <TabItem Header="General">
                 <StackPanel Spacing="15" Margin="10">
-                    <TextBlock Text="Anwendungseinstellungen" FontWeight="Bold" FontSize="16"/>
+                    <TextBlock Text="Anwendungseinstellungen" FontWeight="Bold" FontSize="14"/>
                     <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" 
-                            BorderThickness="1" Padding="15" CornerRadius="5">
+                            BorderThickness="2" Padding="15" CornerRadius="5">
                         <StackPanel Spacing="10">
                             <ToggleSwitch Content="Dark Mode" 
                                           IsChecked="{Binding DarkMode, Mode=TwoWay}"
@@ -55,6 +62,8 @@
                         <Button Content="Login Testen" 
                                 Command="{Binding TestConnectionCommand}"
                                 Padding="20,8"
+                                HorizontalContentAlignment="Center" 
+                                VerticalContentAlignment="Center"
                                 HorizontalAlignment="Left"/>
                         
                         <ProgressBar IsIndeterminate="True" 
@@ -136,6 +145,8 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
                 <Button Content="Abbrechen" 
                         Command="{Binding CancelCommand}" 
+                        HorizontalContentAlignment="Center" 
+                        VerticalContentAlignment="Center"
                         Width="100"/>
                 
                 <Button Content="OK" 
@@ -143,8 +154,11 @@
                         Background="{DynamicResource SystemAccentColor}" 
                         Foreground="White" 
                         Width="100"
+                        HorizontalContentAlignment="Center" 
+                        VerticalContentAlignment="Center"
                         FontWeight="Bold"/>
             </StackPanel>
         </Border>
-    </Grid>
+        </Grid>
+    </Border>
 </Window>

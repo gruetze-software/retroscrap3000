@@ -57,8 +57,7 @@ public class ScraperManager
 	{
 		Log.Information($"FetchSsUserInfosAsync() Call Api {BaseUrl}ssuserInfos.php?xxxxxxx");
 		var url = $"{BaseUrl}ssuserInfos.php?{BuildAuthQuery()}";
-        Trace.WriteLine(url);
-		Log.Debug(url);
+        Log.Debug(url);
 		
 		using var resp = await _http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
 		if (!resp.IsSuccessStatusCode)

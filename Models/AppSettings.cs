@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using RetroScrap3000.Helpers;
+using Serilog;
 
 namespace RetroScrap3000.Models;
 
@@ -80,19 +81,19 @@ public class AppSettings
             return new AppSettings();
         try 
         { 
-            Trace.WriteLine($"Load {FilePath}");
+            Log.Information($"Load {FilePath}");
             return JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(FilePath)) ?? new AppSettings(); 
         }
         catch (Exception ex)
         { 
-            Trace.WriteLine("Exception load settings.json: " + Tools.GetExcMsg(ex));
+            Log.Fatal(ex, "Exception load settings.json");
             return new AppSettings(); 
         }
     }
 
     public void Save()
     {
-        Trace.WriteLine($"Save {FilePath}");
+        Log.Information($"Save {FilePath}");
         File.WriteAllText(FilePath, JsonSerializer.Serialize(this));
     }
 
