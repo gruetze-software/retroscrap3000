@@ -230,7 +230,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     var displayItem = new SystemViewModel(gamesFound.RetroSys);
                     foreach (var game in gamesFound.Games)
                     {
-                        displayItem.Roms.Add(new GameViewModel(game));
+                        displayItem.Roms.Add(game);
                     }
                     Systems.Add(displayItem);
                 }
