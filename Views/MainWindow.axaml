@@ -9,6 +9,26 @@
         TransparencyLevelHint="AcrylicBlur"
         Width="1000" Height="700" WindowStartupLocation="CenterScreen">
 
+        <Window.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="FontSize" Value="11"/>
+        </Style>
+        <Style Selector="ListBoxItem">
+            <Setter Property="FontSize" Value="11"/>
+        </Style>
+        <Style Selector="DataGridCell">
+            <Setter Property="FontSize" Value="11"/>
+        </Style>
+        <Style Selector="DataGridColumnHeader">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="MinHeight" Value="25"/>
+        </Style>
+    </Window.Styles>
+
     <Grid RowDefinitions="Auto, *">
         
         <Border Grid.Row="0" 
@@ -43,39 +63,47 @@
         <Grid Grid.Row="1" ColumnDefinitions="350, 5, *">
             
             <Grid Grid.Column="0" RowDefinitions="*, 5, 2*">
-                
-                <Border Grid.Row="0" Background="{DynamicResource SystemControlBackgroundListLowBrush}" 
-                        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="0,0,1,1">
-                    <DockPanel Margin="10">
-                        <TextBlock DockPanel.Dock="Top" Text="SYSTEME" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource SystemAccentColor}" Margin="0,0,0,10"/>
-                        <ListBox ItemsSource="{Binding Systems}" SelectedItem="{Binding SelectedSystem}" Background="Transparent">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate x:DataType="vm:SystemViewModel">
-                                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,2">
-                                        <Image Source="{Binding SystemIcon}" Width="20" Height="20" Stretch="Uniform" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding SystemName}" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+    
+                <Border Grid.Row="0" Background="{DynamicResource SystemControlBackgroundListLowBrush}" BorderThickness="0,0,1,1" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+                    <DockPanel Margin="5">
+                        <TextBlock DockPanel.Dock="Top" Text="SYSTEME" FontWeight="Bold" Foreground="{DynamicResource SystemAccentColor}" Margin="0,0,0,5"/>
+                        <DataGrid ItemsSource="{Binding Systems}" 
+                                SelectedItem="{Binding SelectedSystem}" 
+                                IsReadOnly="True" 
+                                HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="" Width="30">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Image Source="{Binding SystemIcon}" Width="16" Height="16" Margin="5,0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="System" Binding="{Binding SystemName}" Width="*" />
+                                <DataGridTextColumn Header="ROMs" Binding="{Binding Roms.Count}" Width="50" />
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </DockPanel>
                 </Border>
 
-                <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Background="Transparent" ResizeDirection="Rows"/>
+                <GridSplitter Grid.Row="1" Height="5" Background="Transparent" ResizeDirection="Rows"/>
 
                 <Border Grid.Row="2" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="0,0,1,0">
-                    <DockPanel Margin="10">
-                        <TextBlock DockPanel.Dock="Top" Text="{Binding SelectedSystem.SystemName, FallbackValue='GAMES', StringFormat='GAMES: {0}'}" 
-                                FontSize="12" FontWeight="Bold" Foreground="{DynamicResource SystemAccentColor}" Margin="0,0,0,10"/>
-                        <ListBox ItemsSource="{Binding SelectedSystem.Roms}" 
-                                SelectedItem="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).SelectedGame}" 
-                                Background="Transparent">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate x:DataType="vm:GameViewModel">
-                                    <TextBlock Text="{Binding Name}" />
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                    <DockPanel Margin="5">
+                        <TextBlock DockPanel.Dock="Top" Text="GAMES" FontWeight="Bold" Foreground="{DynamicResource SystemAccentColor}" Margin="0,0,0,5"/>
+                        <DataGrid ItemsSource="{Binding SelectedSystem.Roms}" 
+                                SelectedItem="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).SelectedGame}"
+                                IsReadOnly="True"
+                                GridLinesVisibility="All"
+                                HorizontalGridLinesBrush="Gray"
+                                VerticalGridLinesBrush="Gray">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
+                                <DataGridTextColumn Header="Year" Binding="{Binding ReleaseYear}" Width="50" />
+                                <DataGridTextColumn Header="Genre" Binding="{Binding Genre}" Width="80" />
+                                <DataGridTextColumn Header="Ext" Binding="{Binding FileNameShort}" Width="40" />
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </DockPanel>
                 </Border>
             </Grid>

@@ -2,6 +2,7 @@ using ReactiveUI;
 using Avalonia.Media;
 using RetroScrap3000.Models;
 using System;
+using System.IO;
 
 namespace RetroScrap3000.ViewModels;
 
@@ -135,6 +136,17 @@ public class GameViewModel : ViewModelBase
             }
         }
     } 
+
+    public string FileNameShort 
+    {
+        get 
+        {
+            if (string.IsNullOrEmpty(Entry.Path)) return "-";
+            return Path.GetFileName(Entry.Path);
+        }
+    }
+
+    public string ReleaseYear => Entry.ReleaseDate?.Year.ToString() ?? "-";
 
     public string? Publisher
     {
