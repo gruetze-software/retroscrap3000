@@ -15,7 +15,7 @@ public class SystemViewModel : ViewModelBase
     public Bitmap? SystemBanner { get; private set; }
 
     // Das Herzstück: Jedes System trägt seine ROMs selbst
-    public ObservableCollection<GameEntry> Roms { get; } = new();
+   public ObservableCollection<GameViewModel> Roms { get; } = new();
 
     // Referenz auf die Logik-Daten (falls benötigt)
     public RetroSystem System { get; set; } = new();

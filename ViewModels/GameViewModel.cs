@@ -1,6 +1,7 @@
 using ReactiveUI;
 using Avalonia.Media;
 using RetroScrap3000.Models;
+using System;
 
 namespace RetroScrap3000.ViewModels;
 
@@ -41,10 +42,112 @@ public class GameViewModel : ViewModelBase
         }
     }
 
-    public string? Developer => Entry.Developer;
-    public string? Genre => Entry.Genre;
-    public string? Description => Entry.Description;
-    public double RatingStars => Entry.RatingStars;
+    public string? Developer
+    {
+        get => Entry.Developer;
+        set
+        {
+            if (Entry.Developer != value)
+            {
+                Entry.Developer = value;
+                this.RaisePropertyChanged();
+            }
+        }
+    }
+
+    public string? Genre
+    {
+        get => Entry.Genre;
+        set
+        {
+            if (Entry.Genre != value)
+            {
+                Entry.Genre = value;
+                this.RaisePropertyChanged();
+            }
+        }
+    }
+
+    public string? Description
+    {
+        get => Entry.Description;
+        set
+        {
+            if (Entry.Description != value)
+            {
+                Entry.Description = value;
+                this.RaisePropertyChanged();
+            }
+        }
+    }
+
+    public string? Players
+    {
+        get => Entry.Players;
+        set
+        {
+            if (Entry.Players != value)
+            {
+                Entry.Players = value;
+                this.RaisePropertyChanged();
+            }
+        }
+    }
+    
+    public string RatingStars
+    {
+        get
+        {
+            // Beispiel: 0.8 im Model entspricht 4 von 5 Sternen
+            double val = Entry.Rating;
+            int stars = (int)Math.Round(val * 5); 
+            
+            // Erzeugt einen String wie "★★★★☆"
+            return new string('★', stars).PadRight(5, '☆');
+        }
+    }
+
+    // Für die Bearbeitung lassen wir den numerischen Wert zusätzlich da
+    public string RatingValue
+    {
+        get => (Entry.Rating * 10).ToString("F1") ?? "0.0"; // Anzeige 0-10 für leichtere Eingabe
+        set
+        {
+            if (double.TryParse(value, out double result))
+            {
+                var newVal = result / 10.0;
+                Entry.Rating = newVal;
+                this.RaisePropertyChanged(nameof(RatingValue));
+                this.RaisePropertyChanged(nameof(RatingStars)); // Sterne aktualisieren!
+            }
+        }
+    }
+
+    public DateTime? ReleaseDate
+    {
+        get => Entry.ReleaseDate;
+        set
+        {
+            if (!Equals(Entry.ReleaseDate, value))
+            {
+                Entry.ReleaseDate = value;
+                this.RaisePropertyChanged();
+            }
+        }
+    } 
+
+    public string? Publisher
+    {
+        get => Entry.Publisher;
+        set
+        {
+            if (Entry.Publisher != value)
+            {
+                Entry.Publisher = value;
+                this.RaisePropertyChanged();
+            }
+        }
+    }
 
     // Status-Farbe für die Liste
     public IBrush StatusColor => Entry.State switch

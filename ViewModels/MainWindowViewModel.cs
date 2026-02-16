@@ -231,7 +231,9 @@ public partial class MainWindowViewModel : ViewModelBase
                     var displayItem = new SystemViewModel(gamesFound.RetroSys);
                     foreach (var game in gamesFound.Games)
                     {
-                        displayItem.Roms.Add(game);
+                        // Das Model (GameEntry) in ein ViewModel verpacken
+                        var vm = new GameViewModel(game); 
+                        displayItem.Roms.Add(vm);
                     }
                     Systems.Add(displayItem);
                 }
